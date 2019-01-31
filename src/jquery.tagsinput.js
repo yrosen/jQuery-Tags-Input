@@ -17,6 +17,8 @@
 
     var delimiter = new Array();
     var tags_callbacks = new Array();
+    var settings = {};
+
     $.fn.doAutosize = function(o) {
         var minWidth = $(this).data('minwidth'),
             maxWidth = $(this).data('maxwidth'),
@@ -100,16 +102,23 @@
             }
 
             if (value != '' && skipTag != true) {
-                $('<span>').addClass('tag').append(
-                    $('<span>').text(value).append('&nbsp;&nbsp;'),
-                    $('<a>', {
-                        href: '#',
-                        title: 'Removing tag',
-                        text: 'x'
-                    }).click(function() {
-                        return $('#' + id).removeTag(escape(value));
-                    })
-                ).insertBefore('#' + id + '_addTag');
+                var tagOuterElem = $('<span>').addClass('tag')
+                var tagInnerElem = $('<span>').text(value);
+
+                if(settings.interactive) {
+                    tagInnerElem.append(
+                        '&nbsp;&nbsp;',
+                        $('<a>', {
+                            href  : '#',
+                            title : 'Remove tag',
+                            text  : 'x'
+                        }).click(function () {
+                            return $('#' + id).removeTag(escape(value));
+                        })
+                    );
+                }
+
+                tagOuterElem.append(tagInnerElem).insertBefore('#' + id + '_addTag');
 
                 tagslist.push(value);
 
@@ -178,7 +187,7 @@
     }
 
     $.fn.tagsInput = function(options) {
-        var settings = jQuery.extend({
+        settings = jQuery.extend({
             interactive: true,
             defaultText: 'add a tag',
             minChars: 0,

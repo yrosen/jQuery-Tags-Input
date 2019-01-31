@@ -295,7 +295,13 @@
                         });
                     }
 
-
+                    if(autocomplete_options.allow_new_tags !== undefined && !autocomplete_options.allow_new_tags) {
+                        $(data.fake_input).bind('keypress',data,function(event) {
+                            if (_checkDelimiter(event)) {
+                                return false;
+                            }
+                        });
+                    }
                 } else {
                     // if a user tabs out of the field, create a new tag
                     // this is only available if autocomplete is not used.
@@ -313,24 +319,27 @@
                         }
                         return false;
                     });
-
                 }
-                // if user types a default delimiter like comma,semicolon and then create a new tag
-                $(data.fake_input).bind('keypress', data, function(event) {
-                    if (_checkDelimiter(event)) {
-                        event.preventDefault();
-                        if ((event.data.minChars <= $(event.data.fake_input).val().length) && (!event.data.maxChars || (event.data.maxChars >= $(event.data.fake_input).val().length)))
-                            $(event.data.real_input).addTag($(event.data.fake_input).val(), {
-                                focus: true,
-                                unique: (settings.unique)
-                            });
-                        $(event.data.fake_input).resetAutosize(settings);
-                        return false;
-                    } else if (event.data.autosize) {
-                        $(event.data.fake_input).doAutosize(settings);
 
-                    }
-                });
+                if(autocomplete_options.allow_new_tags === undefined || autocomplete_options.allow_new_tags) {
+                    // if user types a default delimiter like comma,semicolon and then create a new tag
+                    $(data.fake_input).bind('keypress', data, function(event) {
+                        if (_checkDelimiter(event)) {
+                            event.preventDefault();
+                            if ((event.data.minChars <= $(event.data.fake_input).val().length) && (!event.data.maxChars || (event.data.maxChars >= $(event.data.fake_input).val().length)))
+                                $(event.data.real_input).addTag($(event.data.fake_input).val(), {
+                                    focus: true,
+                                    unique: (settings.unique)
+                                });
+                            $(event.data.fake_input).resetAutosize(settings);
+                            return false;
+                        } else if (event.data.autosize) {
+                            $(event.data.fake_input).doAutosize(settings);
+
+                        }
+                    });
+                }
+
                 //Delete last tag on backspace
                 data.removeWithBackspace && $(data.fake_input).bind('keydown', function(event) {
                     if (event.keyCode == 8 && $(this).val() == '') {
